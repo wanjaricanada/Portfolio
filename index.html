@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nitant Wanjari — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0a0a0a;
+  --surface:  #111111;
+  --surface2: #181818;
+  --border:   rgba(255,255,255,0.08);
+  --text:     #f0ede8;
+  --muted:    rgba(240,237,232,0.45);
+  --accent:   #e8dfc8;
+  --tag-bg:   rgba(255,255,255,0.06);
+  --tag-text: rgba(240,237,232,0.6);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  cursor: none;
+  overflow-x: hidden;
+}
+
+/* ── Cursor ───────────────────────────────────── */
+#cursor {
+  position: fixed; width: 10px; height: 10px;
+  background: var(--accent); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: width .25s, height .25s;
+  mix-blend-mode: difference;
+}
+#cursor-ring {
+  position: fixed; width: 36px; height: 36px;
+  border: 1px solid rgba(232,223,200,0.4); border-radius: 50%;
+  pointer-events: none; z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: width .3s, height .3s, border-color .3s;
+}
+body:has(a:hover) #cursor,
+body:has(.card:hover) #cursor   { width: 22px; height: 22px; }
+body:has(a:hover) #cursor-ring,
+body:has(.card:hover) #cursor-ring { width: 64px; height: 64px; border-color: rgba(232,223,200,0.18); }
+
+/* ── Nav ──────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 26px 48px;
+}
+nav::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(10,10,10,0.94) 0%, transparent 100%);
+  pointer-events: none;
+}
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif; font-size: 20px;
+  letter-spacing: .1em; color: var(--text); text-decoration: none;
+  position: relative; z-index: 1;
+}
+.nav-links { display: flex; gap: 28px; list-style: none; position: relative; z-index: 1; }
+.nav-links a {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none; transition: color .2s;
+}
+.nav-links a:hover { color: var(--text); }
+
+/* ── HERO — Full-screen video background ─────── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex; align-items: flex-end;
+  overflow: hidden;
+}
+
+/* YouTube iframe as bg */
+.hero-bg-video {
+  position: absolute; inset: 0; z-index: 0;
+  overflow: hidden; background: #000;
+}
+.hero-bg-video iframe {
+  /* Scale to always cover the viewport at 16:9 */
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 100vw;
+  height: 56.25vw;        /* 100/16*9 */
+  min-height: 100vh;
+  min-width: 177.78vh;    /* 100/9*16 */
+  transform: translate(-50%, -50%);
+  border: none;
+  pointer-events: none;
+}
+/* Multi-layer dark overlay for readability */
+.hero-overlay {
+  position: absolute; inset: 0; z-index: 1;
+  background:
+    linear-gradient(to top,    rgba(10,10,10,0.92) 0%,  rgba(10,10,10,0.3) 40%, transparent 70%),
+    linear-gradient(to bottom, rgba(10,10,10,0.6) 0%,   transparent 30%),
+    linear-gradient(to right,  rgba(10,10,10,0.3) 0%,   transparent 60%);
+}
+
+.hero-content {
+  position: relative; z-index: 2;
+  padding: 0 48px 80px;
+  max-width: 760px;
+}
+.hero-greeting {
+  font-family: 'DM Sans', sans-serif; font-size: 15px;
+  font-weight: 300; font-style: italic; color: var(--muted);
+  letter-spacing: .06em; margin-bottom: 6px;
+  opacity: 0; animation: fadeUp .8s .2s forwards;
+}
+.hero-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(72px, 10vw, 140px); line-height: .9; letter-spacing: .02em;
+  color: var(--text);
+  opacity: 0; animation: fadeUp .9s .35s forwards;
+  text-shadow: 0 2px 40px rgba(0,0,0,0.6);
+}
+.hero-title {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  letter-spacing: .2em; text-transform: uppercase; color: var(--muted);
+  margin-top: 18px; margin-bottom: 32px;
+  opacity: 0; animation: fadeUp .9s .5s forwards;
+}
+.hero-bio {
+  max-width: 540px; font-size: 14.5px; font-weight: 300;
+  line-height: 1.8; color: rgba(240,237,232,0.68);
+  opacity: 0; animation: fadeUp .9s .65s forwards;
+}
+
+.scroll-hint {
+  position: absolute; bottom: 36px; right: 48px; z-index: 2;
+  display: flex; align-items: center; gap: 12px;
+  color: var(--muted); font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  opacity: 0; animation: fadeIn 1s 1.2s forwards;
+}
+.scroll-hint::after {
+  content: ''; display: block; width: 40px; height: 1px; background: var(--muted);
+}
+
+/* ── General Sections ─────────────────────────── */
+.section { padding: 100px 48px 0; }
+
+.section-label {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: .22em; text-transform: uppercase; color: var(--muted);
+  margin-bottom: 40px; display: flex; align-items: center; gap: 16px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── Grids ────────────────────────────────────── */
+.grid-2   { display: grid; grid-template-columns: 1fr 1fr;     gap: 2px; margin-bottom: 2px; }
+.grid-3   { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; margin-bottom: 2px; }
+.grid-full { margin-bottom: 2px; }
+
+/* ── Project Cards ────────────────────────────── */
+.card {
+  position: relative; background: var(--surface); overflow: hidden;
+  cursor: none; text-decoration: none; display: block;
+  transition: background .3s;
+}
+.card:hover { background: var(--surface2); }
+
+.card-inner {
+  padding: 32px; height: 100%;
+  display: flex; flex-direction: column; min-height: 300px;
+}
+.card-inner.tall { min-height: 420px; }
+.card-inner.wide { min-height: 260px; }
+
+.card-tag {
+  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--tag-text);
+  background: var(--tag-bg); border: 1px solid var(--border);
+  padding: 4px 10px; border-radius: 2px; display: inline-flex;
+  align-items: center; gap: 7px; margin-bottom: 16px; align-self: flex-start;
+}
+/* WIP badge */
+.badge-wip {
+  display: inline-block; background: rgba(255,180,0,0.12);
+  border: 1px solid rgba(255,180,0,0.3); color: rgba(255,180,0,0.9);
+  font-size: 8px; letter-spacing: .12em; padding: 2px 7px; border-radius: 20px;
+}
+
+.card-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(36px, 4vw, 56px); line-height: .95; letter-spacing: .02em;
+  color: var(--text); margin-top: auto;
+}
+.card-title span {
+  display: block; font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: .18em; color: var(--muted); font-weight: 400;
+  margin-bottom: 4px; line-height: 1.4; text-transform: uppercase;
+}
+.card-subtitle {
+  margin-top: 12px; font-size: 13px; font-weight: 300;
+  line-height: 1.7; color: rgba(240,237,232,.45); max-width: 320px;
+}
+
+.card-img-bg {
+  position: absolute; inset: 0; background-size: cover; background-position: center;
+  opacity: .2; transition: opacity .4s; pointer-events: none;
+}
+.card:hover .card-img-bg { opacity: .32; }
+
+.card-arrow {
+  position: absolute; bottom: 28px; right: 28px;
+  width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted); transition: border-color .3s, color .3s, transform .3s;
+}
+.card:hover .card-arrow {
+  border-color: rgba(240,237,232,.3); color: var(--text); transform: rotate(45deg);
+}
+
+/* ── Video Cards ──────────────────────────────── */
+.video-card {
+  position: relative; background: var(--surface); overflow: hidden;
+  display: block; transition: background .3s;
+}
+.video-card:hover { background: var(--surface2); }
+
+.video-embed-16x9 { position: relative; width: 100%; padding-top: 56.25%; background: #000; }
+.video-embed-16x9 iframe {
+  position: absolute; inset: 0; width: 100%; height: 100%; border: none;
+}
+
+.video-embed-9x16 {
+  position: relative; width: 100%; padding-top: 177.78%;
+  background: #000; max-width: 380px; margin: 0 auto;
+}
+.video-embed-9x16 iframe {
+  position: absolute; inset: 0; width: 100%; height: 100%; border: none;
+}
+
+.video-meta { padding: 20px 24px 24px; }
+.video-tag {
+  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--tag-text);
+  background: var(--tag-bg); border: 1px solid var(--border);
+  padding: 4px 10px; border-radius: 2px; display: inline-block; margin-bottom: 10px;
+}
+.video-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(22px, 3vw, 36px); line-height: .95; letter-spacing: .02em; color: var(--text);
+}
+.video-title span {
+  display: block; font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: .16em; color: var(--muted); text-transform: uppercase; margin-bottom: 4px;
+}
+
+/* Reels grid */
+.grid-reels { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; margin-bottom: 2px; }
+
+/* Shorts centered */
+.shorts-wrap { display: flex; justify-content: center; background: var(--surface); }
+.shorts-inner { width: 100%; max-width: 420px; }
+
+/* ── BRANDS / TOOLS SECTION ───────────────────── */
+.brands-section { padding: 100px 48px 0; }
+
+.brands-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 2px;
+}
+
+.brand-card {
+  background: var(--surface);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 28px 16px; gap: 12px;
+  transition: background .3s;
+  min-height: 110px;
+}
+.brand-card:hover { background: var(--surface2); }
+
+.brand-logo {
+  width: 44px; height: 44px;
+  object-fit: contain;
+  filter: grayscale(100%) brightness(1.8);
+  opacity: .55;
+  transition: filter .3s, opacity .3s;
+}
+.brand-card:hover .brand-logo {
+  filter: grayscale(0%) brightness(1);
+  opacity: 1;
+}
+/* Fallback icon shown when image fails */
+.brand-icon-fallback {
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--tag-bg); border: 1px solid var(--border);
+  border-radius: 8px; font-size: 18px;
+}
+.brand-name {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted); text-align: center; line-height: 1.4;
+}
+
+/* ── Photo strip ──────────────────────────────── */
+.photo-strip { padding: 2px 0 0; overflow: hidden; }
+.photo-track {
+  display: flex; gap: 2px; width: max-content;
+  animation: slide 30s linear infinite;
+}
+.photo-track:hover { animation-play-state: paused; }
+@keyframes slide { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.photo-thumb-placeholder {
+  width: 240px; height: 160px; flex-shrink: 0;
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: .1em; color: var(--muted);
+}
+
+/* ── Footer ───────────────────────────────────── */
+footer {
+  padding: 100px 48px 60px; display: flex; flex-direction: column;
+  align-items: flex-start; gap: 40px;
+  border-top: 1px solid var(--border); margin-top: 100px;
+}
+.footer-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(60px,10vw,150px); letter-spacing: .02em;
+  color: rgba(240,237,232,0.06); line-height: 1;
+}
+.footer-links { display: flex; gap: 32px; list-style: none; flex-wrap: wrap; }
+.footer-links a {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none; transition: color .2s;
+}
+.footer-links a:hover { color: var(--text); }
+.footer-copy {
+  font-size: 12px; color: rgba(240,237,232,0.18);
+  font-family: 'DM Mono', monospace;
+}
+
+/* ── Animations ───────────────────────────────── */
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+.reveal { opacity:0; transform:translateY(20px); transition:opacity .7s ease, transform .7s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+
+/* ── Noise overlay ────────────────────────────── */
+body::after {
+  content:''; position:fixed; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity:.025; pointer-events:none; z-index:9997;
+}
+
+/* ── Responsive ───────────────────────────────── */
+@media (max-width:900px) {
+  nav { padding:20px 24px; }
+  .nav-links { display:none; }
+  .hero-content { padding:0 24px 60px; }
+  .section, .brands-section { padding:60px 24px 0; }
+  .grid-2, .grid-3, .grid-reels { grid-template-columns:1fr; }
+  footer { padding:60px 24px 40px; }
+  .scroll-hint { right:24px; }
+  .brands-grid { grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); }
+}
+
+/* Arrow SVG shorthand */
+.arr { width:14px; height:14px; }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav>
+  <a href="#" class="nav-logo">NW</a>
+  <ul class="nav-links">
+    <li><a href="#work">Work</a></li>
+    <li><a href="#film">Film</a></li>
+    <li><a href="#ads">Ads</a></li>
+    <li><a href="#vlog">Vlog</a></li>
+    <li><a href="#brands">Brands</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ═══════════════ HERO — full-screen video bg ═══════════════ -->
+<!--
+  NOTE: If you see "Video unavailable" on the background video, go to:
+  YouTube Studio → Content → select the video → Details → scroll to "More options"
+  → enable "Allow embedding" checkbox → Save.
+-->
+<section class="hero">
+
+  <!-- Background video -->
+  <div class="hero-bg-video">
+    <iframe
+      src="https://www.youtube.com/embed/ykLhP6qr70g?autoplay=1&mute=1&loop=1&playlist=ykLhP6qr70g&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      allowfullscreen
+      title="Background showreel">
+    </iframe>
+  </div>
+  <div class="hero-overlay"></div>
+
+  <!-- Content -->
+  <div class="hero-content">
+    <p class="hero-greeting">Hello, I am</p>
+    <h1 class="hero-name">NITANT<br>WANJARI</h1>
+    <p class="hero-title">Tech &nbsp;·&nbsp; Sales &amp; Marketing &nbsp;·&nbsp; Immersive Media</p>
+    <p class="hero-bio">
+      A Creative Technologist and Immersive Media Director working at the intersection of storytelling, emerging technology, and strategic marketing. From projection mapping installations to commercial films, UI systems to sales strategy — every project is built to move people.
+    </p>
+  </div>
+
+  <div class="scroll-hint">Scroll to explore</div>
+</section>
+
+
+<!-- ═══════════════ IMMERSIVE DESIGN ═══════════════ -->
+<section class="section" id="work">
+  <div class="section-label reveal">Immersive Design</div>
+
+  <div class="grid-2 reveal">
+
+    <!-- Projection Mapping — WIP -->
+    <div class="card">
+      <div class="card-img-bg" style="background-image:url('https://framerusercontent.com/images/OIdAgEsMKrWQNauSJqkZci3eYk.png')"></div>
+      <div class="card-inner tall">
+        <span class="card-tag">Immersive Install &nbsp;<span class="badge-wip">&#9679; Crafting in Progress</span></span>
+        <div class="card-title">
+          <span>Large-Scale</span>
+          PROJECTION<br>MAPPING
+        </div>
+        <p class="card-subtitle">An architectural projection experience currently in development. Blending spatial storytelling with real-time generative visuals.</p>
+      </div>
+    </div>
+
+    <!-- Touch Designer — WIP -->
+    <div class="card">
+      <div class="card-img-bg" style="background-image:url('https://framerusercontent.com/images/jklknW5LrOWil4kWGbMhQV9GS3M.png')"></div>
+      <div class="card-inner tall">
+        <span class="card-tag">Interactive Install &nbsp;<span class="badge-wip">&#9679; Crafting in Progress</span></span>
+        <div class="card-title">
+          <span>Real-Time</span>
+          TOUCH<br>DESIGNER
+        </div>
+        <p class="card-subtitle">A gesture-driven interactive installation built in TouchDesigner — currently being refined for live events and exhibitions.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══════════════ INTERFACE DESIGN ═══════════════ -->
+<section class="section">
+  <div class="section-label reveal">Interface Design</div>
+
+  <div class="grid-3 reveal">
+
+    <!-- Quebec Vipassana (formerly Zara) -->
+    <a href="#" class="card">
+      <div class="card-img-bg" style="background:linear-gradient(135deg,#1a2a1a,#0d1a0d);opacity:.6;"></div>
+      <div class="card-inner">
+        <span class="card-tag">Redesign</span>
+        <div class="card-title">
+          <span>Quebec</span>
+          VIPASSANA
+        </div>
+      </div>
+      <span class="card-arrow"><svg class="arr" viewBox="0 0 14 14" fill="none"><path d="M2 12L12 2M12 2H4M12 2V10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </a>
+
+    <a href="#" class="card">
+      <div class="card-img-bg" style="background-image:url('https://framerusercontent.com/images/OsX8V34pqsJedu64T5AvWqYYPc.png')"></div>
+      <div class="card-inner">
+        <span class="card-tag">Internship</span>
+        <div class="card-title"><span>Lead Management</span>SYSTEM</div>
+      </div>
+      <span class="card-arrow"><svg class="arr" viewBox="0 0 14 14" fill="none"><path d="M2 12L12 2M12 2H4M12 2V10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </a>
+
+    <a href="#" class="card">
+      <div class="card-img-bg" style="background-image:url('https://framerusercontent.com/images/aeic4zvTB8oFY1Pxqa1uIklA6jY.png')"></div>
+      <div class="card-inner">
+        <span class="card-tag">Application</span>
+        <div class="card-title"><span>Ballot</span>BOOK</div>
+      </div>
+      <span class="card-arrow"><svg class="arr" viewBox="0 0 14 14" fill="none"><path d="M2 12L12 2M12 2H4M12 2V10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </a>
+
+  </div>
+
+  <div class="grid-2 reveal">
+
+    <a href="#" class="card">
+      <div class="card-img-bg" style="background-image:url('https://framerusercontent.com/images/u6sHiFxJbFsybPo7rEIh1zyzZc.png')"></div>
+      <div class="card-inner wide">
+        <span class="card-tag">Application</span>
+        <div class="card-title"><span>Srishti</span>MARKETPLACE</div>
+      </div>
+      <span class="card-arrow"><svg class="arr" viewBox="0 0 14 14" fill="none"><path d="M2 12L12 2M12 2H4M12 2V10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </a>
+
+    <a href="#" class="card">
+      <div class="card-img-bg" style="background-image:url('https://framerusercontent.com/images/29rNZnx3hvd5NVFoMH4f4b0FRHg.png')"></div>
+      <div class="card-inner wide">
+        <span class="card-tag">Redesign — UI/UX</span>
+        <div class="card-title">BLACKBOARD</div>
+      </div>
+      <span class="card-arrow"><svg class="arr" viewBox="0 0 14 14" fill="none"><path d="M2 12L12 2M12 2H4M12 2V10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </a>
+
+  </div>
+
+  <div class="grid-full reveal">
+    <a href="#" class="card">
+      <div class="card-img-bg" style="background-image:url('https://framerusercontent.com/images/oSjyyoflLNH1sbCjoKPbW2Nbqrk.png'); opacity:.12;"></div>
+      <div class="card-inner wide" style="min-height:220px">
+        <span class="card-tag">Application</span>
+        <div class="card-title">MONEYMAP</div>
+      </div>
+      <span class="card-arrow"><svg class="arr" viewBox="0 0 14 14" fill="none"><path d="M2 12L12 2M12 2H4M12 2V10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </a>
+  </div>
+</section>
+
+
+<!-- ═══════════════ FILM DIRECTION ═══════════════ -->
+<section class="section" id="film">
+  <div class="section-label reveal">Film Direction</div>
+
+  <!-- Featured YouTube — full width -->
+  <!--
+    NOTE: If this video shows "Video unavailable / Error 153":
+    Go to YouTube Studio → your video → Details → More options → check "Allow embedding" → Save.
+  -->
+  <div class="grid-full reveal" style="margin-bottom:2px;">
+    <div class="video-card">
+      <div class="video-embed-16x9">
+        <iframe
+          src="https://www.youtube.com/embed/ykLhP6qr70g?rel=0&modestbranding=1&color=white&fs=1"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          title="Film Direction — Featured Showreel">
+        </iframe>
+      </div>
+      <div class="video-meta">
+        <div class="video-tag">Direction</div>
+        <div class="video-title"><span>Featured Film</span>SHOWREEL</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 Instagram Reels -->
+  <!--
+    NOTE: Instagram reels will show correctly once deployed to a live domain (GitHub Pages).
+    They require a proper HTTPS domain to load — previewing as a local file will block them.
+  -->
+  <div class="grid-reels reveal">
+
+    <div class="video-card">
+      <div class="video-embed-9x16">
+        <iframe
+          src="https://www.instagram.com/reel/DSEhBtWjVo7/embed/"
+          scrolling="no" frameborder="0"
+          allowtransparency="true"
+          allow="encrypted-media; autoplay"
+          title="Film Reel 01">
+        </iframe>
+      </div>
+      <div class="video-meta">
+        <div class="video-tag">Instagram</div>
+        <div class="video-title"><span>Reel</span>FILM 01</div>
+      </div>
+    </div>
+
+    <div class="video-card">
+      <div class="video-embed-9x16">
+        <iframe
+          src="https://www.instagram.com/reel/DSDoXhBjw-x/embed/"
+          scrolling="no" frameborder="0"
+          allowtransparency="true"
+          allow="encrypted-media; autoplay"
+          title="Film Reel 02">
+        </iframe>
+      </div>
+      <div class="video-meta">
+        <div class="video-tag">Instagram</div>
+        <div class="video-title"><span>Reel</span>FILM 02</div>
+      </div>
+    </div>
+
+    <div class="video-card">
+      <div class="video-embed-9x16">
+        <iframe
+          src="https://www.instagram.com/reel/DIcxYXHRghi/embed/"
+          scrolling="no" frameborder="0"
+          allowtransparency="true"
+          allow="encrypted-media; autoplay"
+          title="Film Reel 03">
+        </iframe>
+      </div>
+      <div class="video-meta">
+        <div class="video-tag">Instagram</div>
+        <div class="video-title"><span>Reel</span>FILM 03</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══════════════ COMMERCIAL ADVERTISEMENT ═══════════════ -->
+<section class="section" id="ads">
+  <div class="section-label reveal">Commercial Advertisement</div>
+
+  <div class="grid-2 reveal" style="align-items:start;">
+
+    <div class="video-card">
+      <div class="shorts-wrap">
+        <div class="shorts-inner">
+          <div class="video-embed-9x16">
+            <iframe
+              src="https://www.youtube.com/embed/esDsU5NWf5Q?rel=0&modestbranding=1&color=white&fs=1"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              title="Commercial Advertisement">
+            </iframe>
+          </div>
+        </div>
+      </div>
+      <div class="video-meta">
+        <div class="video-tag">YouTube Shorts</div>
+        <div class="video-title"><span>Commercial</span>AD FILM</div>
+      </div>
+    </div>
+
+    <div class="card" style="min-height:0;">
+      <div class="card-inner" style="min-height:320px; justify-content:center;">
+        <span class="card-tag">Direction &amp; Production</span>
+        <div class="card-title" style="margin-top:24px;">COMMERCIAL<br>WORK</div>
+        <p class="card-subtitle">
+          Crafting high-impact commercial content that merges brand storytelling with cinematic visuals. From concept to final cut — every frame is intentional and every second earns its place.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══════════════ GRAPHIC DESIGN ═══════════════ -->
+<section class="section">
+  <div class="section-label reveal">Graphic Design</div>
+
+  <div class="grid-2 reveal">
+
+    <!-- Park View Homes (formerly Sahyagri) -->
+    <a href="https://park-view-homes.ca/" target="_blank" rel="noopener" class="card">
+      <div class="card-img-bg" style="background:linear-gradient(135deg,#1a1510,#0d1018);opacity:.8;"></div>
+      <div class="card-inner">
+        <span class="card-tag">Branding</span>
+        <div class="card-title">
+          <span>Park View Homes</span>
+          CANADA
+        </div>
+      </div>
+      <span class="card-arrow"><svg class="arr" viewBox="0 0 14 14" fill="none"><path d="M2 12L12 2M12 2H4M12 2V10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </a>
+
+    <!-- Placeholder for future work -->
+    <div class="card">
+      <div class="card-inner" style="min-height:300px; justify-content:center; align-items:center;">
+        <span class="card-tag">Coming Soon</span>
+        <div class="card-title" style="text-align:center; font-size:clamp(18px,2vw,28px); color:var(--muted);">MORE WORK<br>LOADING…</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══════════════ PHOTOGRAPHY ═══════════════ -->
+<section class="section">
+  <div class="section-label reveal">Photography</div>
+
+  <div class="grid-3 reveal">
+
+    <a href="#" class="card">
+      <div class="card-img-bg" style="background:linear-gradient(160deg,#0d1520,#101015);opacity:.7;"></div>
+      <div class="card-inner">
+        <span class="card-tag">Aerial</span>
+        <div class="card-title"><span>Drone</span>AERIAL<br>MEDIA</div>
+      </div>
+      <span class="card-arrow"><svg class="arr" viewBox="0 0 14 14" fill="none"><path d="M2 12L12 2M12 2H4M12 2V10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </a>
+
+    <a href="#" class="card">
+      <div class="card-img-bg" style="background:linear-gradient(160deg,#1a100a,#120d08);opacity:.8;"></div>
+      <div class="card-inner">
+        <span class="card-tag">Editorial</span>
+        <div class="card-title"><span>Atmosphere</span>CAFÉ<br>SERIES</div>
+      </div>
+      <span class="card-arrow"><svg class="arr" viewBox="0 0 14 14" fill="none"><path d="M2 12L12 2M12 2H4M12 2V10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </a>
+
+    <a href="#" class="card">
+      <div class="card-img-bg" style="background:linear-gradient(160deg,#1a0f15,#0f0a12);opacity:.8;"></div>
+      <div class="card-inner">
+        <span class="card-tag">Fashion</span>
+        <div class="card-title"><span>Studio</span>FASHION<br>SHOOT</div>
+      </div>
+      <span class="card-arrow"><svg class="arr" viewBox="0 0 14 14" fill="none"><path d="M2 12L12 2M12 2H4M12 2V10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </a>
+
+  </div>
+
+  <!-- Photo strip -->
+  <div class="photo-strip reveal">
+    <div class="photo-track">
+      <div class="photo-thumb-placeholder">Aerial 01</div>
+      <div class="photo-thumb-placeholder">Café 01</div>
+      <div class="photo-thumb-placeholder">Fashion 01</div>
+      <div class="photo-thumb-placeholder">Aerial 02</div>
+      <div class="photo-thumb-placeholder">Café 02</div>
+      <div class="photo-thumb-placeholder">Fashion 02</div>
+      <div class="photo-thumb-placeholder">Aerial 03</div>
+      <div class="photo-thumb-placeholder">Café 03</div>
+      <div class="photo-thumb-placeholder">Aerial 01</div>
+      <div class="photo-thumb-placeholder">Café 01</div>
+      <div class="photo-thumb-placeholder">Fashion 01</div>
+      <div class="photo-thumb-placeholder">Aerial 02</div>
+      <div class="photo-thumb-placeholder">Café 02</div>
+      <div class="photo-thumb-placeholder">Fashion 02</div>
+      <div class="photo-thumb-placeholder">Aerial 03</div>
+      <div class="photo-thumb-placeholder">Café 03</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════ VLOG ═══════════════ -->
+<section class="section" id="vlog">
+  <div class="section-label reveal">Vlog</div>
+
+  <div class="grid-2 reveal" style="align-items:start;">
+
+    <div class="card">
+      <div class="card-inner" style="min-height:300px; justify-content:center;">
+        <span class="card-tag">Behind the Scenes</span>
+        <div class="card-title" style="margin-top:24px;">LIFE<br>BEHIND<br>THE LENS</div>
+        <p class="card-subtitle">
+          Raw, unfiltered moments from shoots, travels, and the creative process. A window into the world behind every frame.
+        </p>
+      </div>
+    </div>
+
+    <div class="video-card">
+      <div class="video-embed-9x16" style="max-width:100%; padding-top:100%;">
+        <iframe
+          src="https://www.instagram.com/reel/DSL0Xa3kUWe/embed/"
+          scrolling="no" frameborder="0"
+          allowtransparency="true"
+          allow="encrypted-media; autoplay"
+          title="Vlog Reel">
+        </iframe>
+      </div>
+      <div class="video-meta">
+        <div class="video-tag">Instagram</div>
+        <div class="video-title"><span>Vlog</span>BEHIND THE SCENES</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══════════════ BRANDS & TOOLS ═══════════════ -->
+<section class="brands-section" id="brands">
+  <div class="section-label reveal">Brands &amp; Tools</div>
+
+  <div class="brands-grid reveal">
+
+    <!-- Each brand: onerror swaps to Google Favicon fallback -->
+
+    <div class="brand-card">
+      <img class="brand-logo" src="https://logo.clearbit.com/dhamma.org" alt="Dhamma.org"
+           onerror="this.src='https://www.google.com/s2/favicons?domain=dhamma.org&sz=64'"/>
+      <span class="brand-name">Dhamma.org</span>
+    </div>
+
+    <div class="brand-card">
+      <img class="brand-logo" src="https://logo.clearbit.com/higgsfield.ai" alt="Higgsfield"
+           onerror="this.src='https://www.google.com/s2/favicons?domain=higgsfield.ai&sz=64'"/>
+      <span class="brand-name">Higgsfield</span>
+    </div>
+
+    <div class="brand-card">
+      <img class="brand-logo" src="https://logo.clearbit.com/anthropic.com" alt="Claude"
+           onerror="this.src='https://www.google.com/s2/favicons?domain=anthropic.com&sz=64'"/>
+      <span class="brand-name">Claude</span>
+    </div>
+
+    <div class="brand-card">
+      <img class="brand-logo" src="https://logo.clearbit.com/openai.com" alt="OpenAI"
+           onerror="this.src='https://www.google.com/s2/favicons?domain=openai.com&sz=64'"/>
+      <span class="brand-name">OpenAI</span>
+    </div>
+
+    <div class="brand-card">
+      <img class="brand-logo" src="https://logo.clearbit.com/amazon.com" alt="Amazon"
+           onerror="this.src='https://www.google.com/s2/favicons?domain=amazon.com&sz=64'"/>
+      <span class="brand-name">Amazon</span>
+    </div>
+
+    <div class="brand-card">
+      <img class="brand-logo" src="https://logo.clearbit.com/homedepot.com" alt="Home Depot"
+           onerror="this.src='https://www.google.com/s2/favicons?domain=homedepot.com&sz=64'"/>
+      <span class="brand-name">Home Depot</span>
+    </div>
+
+    <div class="brand-card">
+      <img class="brand-logo" src="https://logo.clearbit.com/ottawahospital.on.ca" alt="Ottawa Hospital"
+           onerror="this.src='https://www.google.com/s2/favicons?domain=ottawahospital.on.ca&sz=64'"/>
+      <span class="brand-name">Ottawa Hospital</span>
+    </div>
+
+    <div class="brand-card">
+      <img class="brand-logo" src="https://logo.clearbit.com/shopify.com" alt="Shopify"
+           onerror="this.src='https://www.google.com/s2/favicons?domain=shopify.com&sz=64'"/>
+      <span class="brand-name">Shopify</span>
+    </div>
+
+    <div class="brand-card">
+      <img class="brand-logo" src="https://logo.clearbit.com/deslaurier.com" alt="Deslaurier"
+           onerror="this.src='https://www.google.com/s2/favicons?domain=deslaurier.com&sz=64'"/>
+      <span class="brand-name">Deslaurier</span>
+    </div>
+
+    <div class="brand-card">
+      <img class="brand-logo" src="https://logo.clearbit.com/park-view-homes.ca" alt="Park View Homes"
+           onerror="this.src='https://www.google.com/s2/favicons?domain=park-view-homes.ca&sz=64'"/>
+      <span class="brand-name">Park View Homes</span>
+    </div>
+
+    <div class="brand-card">
+      <img class="brand-logo" src="https://logo.clearbit.com/monday.com" alt="Monday.com"
+           onerror="this.src='https://www.google.com/s2/favicons?domain=monday.com&sz=64'"/>
+      <span class="brand-name">Monday.com</span>
+    </div>
+
+    <div class="brand-card">
+      <img class="brand-logo" src="https://logo.clearbit.com/asana.com" alt="Asana"
+           onerror="this.src='https://www.google.com/s2/favicons?domain=asana.com&sz=64'"/>
+      <span class="brand-name">Asana</span>
+    </div>
+
+    <div class="brand-card">
+      <img class="brand-logo" src="https://logo.clearbit.com/python.org" alt="Python"
+           onerror="this.src='https://www.google.com/s2/favicons?domain=python.org&sz=64'"/>
+      <span class="brand-name">Python</span>
+    </div>
+
+    <div class="brand-card">
+      <img class="brand-logo" src="https://logo.clearbit.com/microsoft.com" alt="Microsoft 365"
+           onerror="this.src='https://www.google.com/s2/favicons?domain=microsoft.com&sz=64'"/>
+      <span class="brand-name">Microsoft 365</span>
+    </div>
+
+    <div class="brand-card">
+      <img class="brand-logo" src="https://logo.clearbit.com/code.visualstudio.com" alt="VS Code"
+           onerror="this.src='https://www.google.com/s2/favicons?domain=code.visualstudio.com&sz=64'"/>
+      <span class="brand-name">VS Code</span>
+    </div>
+
+    <div class="brand-card">
+      <img class="brand-logo" src="https://logo.clearbit.com/adobe.com" alt="Adobe"
+           onerror="this.src='https://www.google.com/s2/favicons?domain=adobe.com&sz=64'"/>
+      <span class="brand-name">Adobe</span>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer id="contact">
+  <div class="footer-name">NITANT WANJARI</div>
+  <ul class="footer-links">
+    <li><a href="mailto:wanjariinternational@gmail.com">wanjariinternational@gmail.com</a></li>
+    <li><a href="https://www.instagram.com/babythatsneat" target="_blank" rel="noopener">Instagram</a></li>
+    <li><a href="#">LinkedIn</a></li>
+  </ul>
+  <p class="footer-copy">© 2026 Nitant Wanjari — All rights reserved</p>
+</footer>
+
+
+<script>
+/* ── Custom cursor ── */
+const cursor = document.getElementById('cursor');
+const ring   = document.getElementById('cursor-ring');
+let mx=0, my=0, rx=0, ry=0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx+'px';
+  cursor.style.top  = my+'px';
+});
+(function animRing(){
+  rx += (mx-rx)*.14; ry += (my-ry)*.14;
+  ring.style.left = rx+'px'; ring.style.top = ry+'px';
+  requestAnimationFrame(animRing);
+})();
+
+/* ── Scroll reveal ── */
+const obs = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 60);
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
